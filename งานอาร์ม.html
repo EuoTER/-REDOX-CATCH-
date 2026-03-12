@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Redox Catch</title>
+
+<style>
+
+body{
+margin:0;
+font-family:tahoma;
+background:linear-gradient(-45deg,#020617,#0f172a,#020617,#0f172a);
+background-size:400% 400%;
+animation:bgMove 12s infinite linear;
+color:white;
+overflow:hidden;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* LOBBY */
+
+#lobby{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+/* กล่อง lobby */
+
+.lobbyBox{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.1);
+padding:60px 80px;
+border-radius:20px;
+box-shadow:0 0 40px rgba(0,0,0,0.5);
+animation:floatBox 4s ease-in-out infinite;
+}
+
+@keyframes floatBox{
+0%{transform:translateY(0px)}
+50%{transform:translateY(-10px)}
+100%{transform:translateY(0px)}
+}
+
+/* title */
+
+#lobby h1{
+font-size:70px;
+letter-spacing:4px;
+margin-bottom:20px;
+animation:titleGlow 2s infinite alternate;
+}
+
+@keyframes titleGlow{
+from{text-shadow:0 0 10px #38bdf8;}
+to{text-shadow:0 0 40px #38bdf8;}
+}
+
+#lobby p{
+font-size:22px;
+opacity:.85;
+margin-bottom:40px;
+line-height:1.6;
+}
+
+/* ปุ่ม */
+
+button{
+padding:18px 50px;
+font-size:24px;
+border:none;
+border-radius:14px;
+cursor:pointer;
+background:#38bdf8;
+color:white;
+box-shadow:0 0 20px #38bdf8;
+transition:0.25s;
+animation:pulse 2s infinite;
+}
+
+button:hover{
+transform:scale(1.2);
+box-shadow:0 0 50px #38bdf8;
+}
+
+@keyframes pulse{
+0%{box-shadow:0 0 10px #38bdf8}
+50%{box-shadow:0 0 40px #38bdf8}
+100%{box-shadow:0 0 10px #38bdf8}
+}
+
+canvas{
+background:#1e293b;
+border:4px solid white;
+border-radius:14px;
+display:block;
+margin:20px auto;
+}
+
+#game,#gameover{
+display:none;
+}
+
+#game{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+/* กล่องเกม */
+
+.gameBox{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(8px);
+border:1px solid rgba(255,255,255,0.1);
+padding:30px 40px;
+border-radius:20px;
+box-shadow:0 0 40px rgba(0,0,0,0.6);
+text-align:center;
+}
+
+/* HUD */
+
+.hud{
+display:flex;
+justify-content:space-between;
+margin-bottom:15px;
+font-size:18px;
+opacity:.9;
+}
+
+/* Title */
+
+.gameTitle{
+font-size:42px;
+margin-bottom:15px;
+text-shadow:0 0 15px #38bdf8;
+}
+
+/* canvas */
+
+canvas{
+background:#1e293b;
+border:4px solid white;
+border-radius:14px;
+width:800px;
+height:500px;
+box-shadow:0 0 40px rgba(255,255,255,0.3);
+}
+
+/* HUD ด้านซ้าย */
+
+.sideHUD{
+position:absolute;
+left:40px;
+top:140px;
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+/* กล่องคะแนน */
+
+.hudBox{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(6px);
+border:1px solid rgba(255,255,255,0.15);
+padding:20px 30px;
+border-radius:15px;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+min-width:150px;
+text-align:center;
+}
+
+.hudTitle{
+font-size:14px;
+opacity:0.7;
+letter-spacing:1px;
+}
+
+.hudValue{
+font-size:28px;
+font-weight:bold;
+margin-top:5px;
+color:#38bdf8;
+text-shadow:0 0 10px #38bdf8;
+}
+
+#gameover{
+height:100vh;
+display:none;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+.gameOverBox{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.1);
+padding:60px 80px;
+border-radius:20px;
+box-shadow:0 0 40px rgba(0,0,0,0.6);
+}
+
+.gameOverBox h1{
+font-size:50px;
+color:#ff4d4d;
+margin-bottom:20px;
+text-shadow:0 0 15px #ff4d4d;
+}
+
+.gameOverBox p{
+font-size:22px;
+margin:10px 0;
+}
+
+/* LOADING SCREEN */
+
+#loading{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100vh;
+display:none;
+justify-content:center;
+align-items:center;
+background:#020617;
+z-index:999;
+}
+
+.loadingBox{
+text-align:center;
+}
+
+.spinner{
+width:80px;
+height:80px;
+border:6px solid rgba(255,255,255,0.2);
+border-top:6px solid #38bdf8;
+border-radius:50%;
+margin:30px auto;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
+.loadingBox h1{
+font-size:50px;
+text-shadow:0 0 20px #38bdf8;
+}
+
+.loadingBox p{
+opacity:.7;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- LOADING SCREEN -->
+
+<div id="loading">
+
+<div class="loadingBox">
+
+<h1>⚡ Loading ⚡</h1>
+
+<div class="spinner"></div>
+
+<p>Preparing Experiment...</p>
+
+</div>
+
+</div>
+
+<!-- LOBBY -->
+
+<div id="lobby">
+
+<div class="lobbyBox">
+
+<h1>⚡ REDOX CATCH ⚡</h1>
+
+<p>
+เก็บ <b>e-</b>ไปที่ Cathode และอย่าเก็บไอออนบวก!<br>
+อย่าเก็บ <b>Zn2+,Cu2+,Fe3+,Ag+</b>เด็ดขาดไม่งั้นคุณจะแพ้
+</p>
+
+<button onclick="showLoading(startGame)">▶ START GAME</button>
+
+</div>
+</div>
+
+<!-- GAME -->
+
+<div id="game">
+
+<div class="gameBox">
+
+<div class="gameTitle">⚡ Redox Catch ⚡</div>
+
+<div class="sideHUD">
+
+<div class="hudBox">
+<div class="hudTitle">VOLTAGE</div>
+<div class="hudValue"><span id="score">0</span> mV</div>
+</div>
+
+<div class="hudBox">
+<div class="hudTitle">TIME</div>
+<div class="hudValue"><span id="time">0</span> s</div>
+</div>
+
+</div>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+</div>
+</div>
+
+<!-- GAME OVER -->
+
+<div id="gameover">
+
+<div class="gameOverBox">
+
+<h1>💀 GAME OVER</h1>
+
+<p>Voltage : <span id="finalScore"></span> mV</p>
+<p>Time Survived : <span id="finalTime"></span> s</p>
+<p>High Score : <span id="highScore"></span> mV</p>
+
+<br>
+
+<button onclick="showLoading(startGame)">▶ PLAY AGAIN</button>
+<button onclick="showLoading(goLobby)">🏠 MAIN MENU</button>    
+
+</div>
+
+</div>
+
+
+<script>
+
+const canvas=document.getElementById("gameCanvas")
+const ctx=canvas.getContext("2d")
+const collectSound = new Audio("BUBBLE POP SOUND EFFECT.mp3")
+
+let basket
+let items=[]
+let particles=[]
+let score=0
+let time=0
+let gameRunning=false
+let hitFlash=0
+
+let highScore = localStorage.getItem("redoxHighScore") || 0
+
+let spawnInterval
+let timeInterval
+
+function showLoading(next){
+
+document.getElementById("lobby").style.display="none"
+document.getElementById("game").style.display="none"
+document.getElementById("gameover").style.display="none"
+
+document.getElementById("loading").style.display="flex"
+
+setTimeout(()=>{
+
+document.getElementById("loading").style.display="none"
+
+next()
+
+},2000)
+
+}
+
+function startGame(){
+
+document.getElementById("lobby").style.display="none"
+document.getElementById("gameover").style.display="none"
+document.getElementById("game").style.display="block"
+
+basket={x:275,y:350,width:90,height:20}
+items=[]
+score=0
+time=0
+gameRunning=true
+
+document.getElementById("score").innerText=score
+document.getElementById("time").innerText=time
+
+clearInterval(spawnInterval)
+clearInterval(timeInterval)
+
+spawnInterval=setInterval(createItem,1000)
+
+timeInterval=setInterval(()=>{
+time++
+document.getElementById("time").innerText=time
+},1000)
+
+}
+
+function endGame(){
+
+gameRunning=false
+
+clearInterval(spawnInterval)
+clearInterval(timeInterval)
+
+document.getElementById("game").style.display="none"
+document.getElementById("gameover").style.display="block"
+
+document.getElementById("finalScore").innerText=score
+document.getElementById("finalTime").innerText=time
+
+if(score > highScore){
+highScore = score
+localStorage.setItem("redoxHighScore",score)
+}
+
+document.getElementById("highScore").innerText = highScore
+
+}
+
+function goLobby(){
+
+document.getElementById("gameover").style.display="none"
+document.getElementById("lobby").style.display="block"
+
+}
+
+function createItem(){
+
+if(!gameRunning) return
+
+const types=[
+
+{name:"e-",color:"#00eaff",good:true},
+
+{name:"Zn²+",color:"#ff4d4d",good:false},
+{name:"Cu²+",color:"#ff884d",good:false},
+{name:"Fe³+",color:"#b565ff",good:false},
+{name:"Ag⁺",color:"#c0c0c0",good:false}
+
+]
+
+const type=types[Math.floor(Math.random()*types.length)]
+
+items.push({
+x:Math.random()*560,
+y:0,
+type:type
+})
+
+}
+
+function createParticles(x,y){
+
+for(let i=0;i<10;i++){
+
+particles.push({
+x:x,
+y:y,
+vx:(Math.random()-0.5)*4,
+vy:(Math.random()-0.5)*4,
+life:30
+})
+
+}
+
+}
+
+function update(){
+
+if(!gameRunning) return
+
+for(let i=items.length-1;i>=0;i--){
+
+let item=items[i]
+
+item.y+=4
+
+if(item.y+15>basket.y && item.x>basket.x && item.x<basket.x+basket.width){
+
+if(item.type.good){
+
+score+=10
+document.getElementById("score").innerText=score
+
+collectSound.currentTime=0
+collectSound.play()
+
+createParticles(item.x,item.y)
+
+}else{
+
+hitFlash=20
+endGame()
+
+}
+
+items.splice(i,1)
+continue
+}
+
+if(item.y>400){
+items.splice(i,1)
+}
+
+}
+
+}
+
+for(let i=particles.length-1;i>=0;i--){
+
+let p=particles[i]
+
+p.x+=p.vx
+p.y+=p.vy
+p.life--
+
+if(p.life<=0){
+particles.splice(i,1)
+}
+
+}
+
+function draw(){
+
+if(!basket) return
+
+ctx.clearRect(0,0,600,400)
+
+ctx.fillStyle="#facc15"
+ctx.fillRect(basket.x,basket.y,basket.width,basket.height)
+
+ctx.fillStyle="black"
+ctx.font="14px Arial"
+ctx.fillText("CATHODE",basket.x+12,basket.y+15)
+
+items.forEach(item=>{
+
+ctx.fillStyle=item.type.color
+
+ctx.beginPath()
+ctx.arc(item.x,item.y,15,0,Math.PI*2)
+ctx.fill()
+
+ctx.fillStyle="white"
+ctx.fillText(item.type.name,item.x-12,item.y+5)
+
+})
+
+}
+
+particles.forEach(p=>{
+
+ctx.fillStyle="#38bdf8"
+ctx.beginPath()
+ctx.arc(p.x,p.y,3,0,Math.PI*2)
+ctx.fill()
+
+})
+
+canvas.addEventListener("mousemove",(e)=>{
+
+const rect=canvas.getBoundingClientRect()
+basket.x=e.clientX-rect.left-basket.width/2
+
+})
+
+if(hitFlash>0){
+
+ctx.fillStyle="rgba(255,0,0,0.3)"
+ctx.fillRect(0,0,600,400)
+
+hitFlash--
+
+}
+
+function loop(){
+
+if(gameRunning){
+update()
+draw()
+}
+
+requestAnimationFrame(loop)
+
+}
+
+loop()
+
+</script>
+
+</body>
+</html>
